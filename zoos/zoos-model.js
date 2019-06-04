@@ -26,22 +26,34 @@ function find() {
 
 function findById(id) {
     return db('zoos')
-    .where({ id })
+        .where({ id })
+        .first()
 }
 
 function add(zoo) {
     return db('zoos')
-    .insert(zoo)
+        .insert(zoo, 'id')
+        .then(ids => {
+            const [id] = ids;
+            return findById(id)
+        })
 }
 
 function update(id, changes) {
     return db('zoos')
-    .where( { id })
-    .update(changes)
+        .where({ id })
+        .update(changes)
+        .then(count => {
+            if (count > 0) {
+                return findById(id)
+            } else {
+                return null;
+            }
+        })
 }
 
 function remove(id) {
     return db('zoos')
-    .where({ id })
-    .del()
+        .where({ id })
+        .del()
 }
